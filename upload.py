@@ -33,9 +33,9 @@ while(True):
 						r1 = requests.post(URL_S, data=json.dumps(payload1), headers=headers)
 						r2 = requests.post(URL_S, data=json.dumps(payload2), headers=headers)
 						r3 = requests.post(URL_S, data=json.dumps(payload3), headers=headers)
-						#lo=open(BASEPATH+"LOG_UPLOAD.txt","a")
-						#lo.write("\n"+str(time.time())+":  "+"Values Uploaded "+str(f))
-						#lo.close()
+#						lo=open(BASEPATH+"LOG_UPLOAD.txt","a")
+#						lo.write("\n"+str(time.time())+":  "+"Values Uploaded "+str(f))
+#						lo.close()
 						
 					except Exception as f2:
 						lo=open(BASEPATH+"LOG_UPLOAD.txt","a")
