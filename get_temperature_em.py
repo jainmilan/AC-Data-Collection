@@ -1,4 +1,4 @@
-APPKEY = "er38w9t3fqv4z56dch97d4un"
+APPKEY = [APP-KEY]
 CITY = "New Delhi"
 FORMAT = "json"
 BASE_URL_1 = "http://api.worldweatheronline.com/free/v1/weather.ashx"
