@@ -1,4 +1,3 @@
-
 from ww_APPKEY import APPKEY
 CITY = "New Delhi"
 FORMAT = "json"
@@ -11,6 +10,8 @@ import datetime
 import time
 import os
 from pytz import timezone
+
+Log_File = open(Weather_Data_BasePath + "Log_File.txt","a")
 
 while True:
 	
@@ -25,13 +26,16 @@ while True:
 	try:
 		JSON_Data=requests.get(REQUEST_URL).json()
 	except requests.exceptions.ConnectionError:
-		print "Network is Down"
+		# Writing To the Log File
+		Log_File.write(str(Observation_DateTime) + "=> Network is Down\n")
 		time.sleep(60)
 		continue
 	except requests.exceptions.URLRequired:
-		print "Please provide Correct URL"
+		# Writing To the Log File
+		Log_File.write(str(Observation_DateTime) + "=> Please provide Correct URL")
 	except Exception as E:
-		print "Error Encountered: " + E
+		# Writing To the Log File
+		Log_File.write(str(Observation_DateTime) + "=> Error Encountered: " + E)
 		
 	# Current Condition in the Area
 	Current_Condition = JSON_Data['data']['current_condition'][0]
@@ -62,10 +66,11 @@ while True:
 		Data_file = open(Data_file + str(now.hour)+"_"+str(now.minute)+".csv","a")
 		Data_file.write(str(Observation_TimeStamp)+", "+str(Observation_DateTime)+", "+Weather_Date+" "+CC_Time+"(GMT), "+str(Temperature)+", "+str(Humidity)+"\n")
 	except IOErro:
-		print "Cannot Open the file"
+		# Writing To the Log File
+		Log_File.write(str(Observation_DateTime) + "=> Cannot Open the file")
 	except Exception as exception_raised:
-		print "Error Encountered: " + exception_raised 
-		
+		# Writing To the Log File
+		Log_File.write(str(Observation_DateTime) + "=> Error Encountered: " + exception_raised)
 	
 	# Sleep for 10 Minutes. Collecting at a resolution of 10 Minutes
 	time.sleep(600)
