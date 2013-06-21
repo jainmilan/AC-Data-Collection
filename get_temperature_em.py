@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from ww_APPKEY import APPKEY
+=======
+APPKEY = [APP-KEY]
+>>>>>>> c3a5b13e6c8165a5650e3ce422d793a6d5922939
 CITY = "New Delhi"
 FORMAT = "json"
 BASE_URL = "http://api.worldweatheronline.com/free/v1/weather.ashx"
