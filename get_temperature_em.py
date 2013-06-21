@@ -1,38 +1,72 @@
-APPKEY = "er38w9t3fqv4z56dch97d4un"
+from ww_APPKEY import APPKEY
 CITY = "New Delhi"
 FORMAT = "json"
-BASE_URL_1 = "http://api.worldweatheronline.com/free/v1/weather.ashx"
-REQUEST_URL_1 = BASE_URL_1+"?q=%s&format=%s&key=%s" %(CITY,FORMAT,APPKEY)
-
-CITY_ID = 1273294
-BASE_URL_2 = "http://api.openweathermap.org/data/2.5/weather"
-REQUEST_URL_2 = BASE_URL_2+"?id=%d" %(CITY_ID)
+BASE_URL = "http://api.worldweatheronline.com/free/v1/weather.ashx"
+REQUEST_URL = BASE_URL + "?q=%s&format=%s&key=%s" %(CITY,FORMAT,APPKEY)
+Weather_Data_BasePath = "/home/milan/Projects/Summer_Project/Weather_Data/"
 
 import requests
 import datetime
 import time
+import os
+from pytz import timezone
 
 while True:
-	json_data_1=requests.get(REQUEST_URL_1).json()
-	data_1 = json_data_1['data']['current_condition']
-	date_1 = json_data_1['data']['weather'][0]["date"]
-	time_1 = data_1[0]['observation_time']
-	date_time = str(date_1)+" "+str(time_1)
-	timestamp_1 = int(datetime.datetime.strptime(date_time, '%Y-%m-%d %I:%M %p').strftime("%s")) + 19800
-	date_up = datetime.datetime.fromtimestamp(timestamp_1).strftime('%Y-%m-%d %H:%M:%S')
-	temperature_1 = data_1[0]['temp_C']
-	humidity_1 = data_1[0]['humidity']
-	Data_file = open("/home/milan/Projects/Summer_Project/Scripts/data_1.csv","a")
-	Data_file.write(str(timestamp_1)+","+str(date_up)+","+str(temperature_1)+","+str(humidity_1)+"\n")
 	
-	json_data_2 = requests.get(REQUEST_URL_2).json()
-	temperature_2 = (json_data_2["main"]['temp'])-273.15
-	humidity_2 = json_data_2["main"]['humidity']
-	time_2 = json_data_2["dt"]
-	date_2 = datetime.datetime.fromtimestamp(time_2).strftime('%Y-%m-%d %H:%M:%S')
-	Data_file = open("/home/milan/Projects/Summer_Project/Scripts/data_2.csv","a")
-	Data_file.write(str(time_2)+","+str(date_2)+","+str(temperature_2)+","+str(humidity_2)+"\n")
+	# Current Time to Create CSV File
+	now = datetime.datetime.now(timezone('Asia/Kolkata'))
 	
+	# TimeStamp and Datetime when Request was Made
+	Observation_TimeStamp = time.time()
+	Observation_DateTime = datetime.datetime.fromtimestamp(Observation_TimeStamp).strftime('%Y-%m-%d %H:%M:%S')
+	
+	# JSON Packet Received
+	try:
+		JSON_Data=requests.get(REQUEST_URL).json()
+	except requests.exceptions.ConnectionError:
+		print "Network is Down"
+		time.sleep(60)
+		continue
+	except requests.exceptions.URLRequired:
+		print "Please provide Correct URL"
+	except Exception as E:
+		print "Error Encountered: " + E
+		
+	# Current Condition in the Area
+	Current_Condition = JSON_Data['data']['current_condition'][0]
+	
+	# Weather for the Day
+	Weather = JSON_Data['data']['weather'][0]
+	
+	# Request Made
+	Request = JSON_Data['data']['request'][0]
+	
+	# Date on which weather was Recorded
+	Weather_Date = str(Weather['date'])
+	
+	# Observation Time Returned by WorldWeather
+	CC_Time = str(Current_Condition['observation_time'])
+	
+	# Current Temperature(in degreeC) and Humidity(Percentage)
+	Temperature = Current_Condition['temp_C']
+	Humidity = Current_Condition['humidity']
+	
+	# Write to CSV File
+	try:
+		Data_file = Weather_Data_BasePath + str(now.day) + "_" + str(now.month) + "/"
+		if not os.path.isdir(Data_file):
+			# If Directory not Available Create Directory
+			os.makedirs(Data_file)
+		
+		Data_file = open(Data_file + str(now.hour)+"_"+str(now.minute)+".csv","a")
+		Data_file.write(str(Observation_TimeStamp)+", "+str(Observation_DateTime)+", "+Weather_Date+" "+CC_Time+"(GMT), "+str(Temperature)+", "+str(Humidity)+"\n")
+	except IOErro:
+		print "Cannot Open the file"
+	except Exception as exception_raised:
+		print "Error Encountered: " + exception_raised 
+		
+	
+	# Sleep for 10 Minutes. Collecting at a resolution of 10 Minutes
 	time.sleep(600)
 	
 	
