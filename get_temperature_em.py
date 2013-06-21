@@ -1,3 +1,4 @@
+
 from ww_APPKEY import APPKEY
 CITY = "New Delhi"
 FORMAT = "json"
