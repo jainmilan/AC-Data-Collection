@@ -11,6 +11,7 @@ import time
 import os
 from pytz import timezone
 
+# Log File to save Exceptions and Errors
 Log_File = open(Weather_Data_BasePath + "Log_File.txt","a")
 
 while True:
