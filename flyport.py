@@ -45,7 +45,7 @@ class flyport1:
 			init_time_t = init_time_t = datetime.datetime.now(timezone('Asia/Kolkata'))
 			
 		# File to be Uploaded	
-		FILENAME = BASEPATH + "flyport1" + str(init_time_t.day) + "_" + str(init_time_t.month) + "_" + str(init_time_t.hour) + "_" + str(init_time_t.minute) + ".csv"
+		FILENAME = BASEPATH + "/flyport1/" + str(init_time_t.day) + "_" + str(init_time_t.month) + "_" + str(init_time_t.hour) + "_" + str(init_time_t.minute) + ".csv"
 		file = open(FILENAME,"a")
 		upload_time = time.time()
 		
