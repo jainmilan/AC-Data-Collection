@@ -1,13 +1,13 @@
+import os
+import sys
 import csv
 import time
 import glob
-import os
-import sys
-import requests
 import json
 import math
 import time
 import datetime
+import requests
 
 from pytz import timezone
 from SENSOR_ACT_CONFIG import SA_API_KEY
@@ -16,6 +16,7 @@ from SENSOR_ACT_CONFIG import DEVICE_NAME
 from SENSOR_ACT_CONFIG import URL_SENSOR_ACT
 
 FLYPORT_DATA_BASEPATH =	[Path_To_CSV_Folder]
+
 # Log File	
 log_file = open(FLYPORT_DATA_BASEPATH + "Log_File.txt","a")
 	
