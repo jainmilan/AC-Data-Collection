@@ -11,7 +11,7 @@ init_time = time.time()
 global init_time_t
 init_time_t = datetime.datetime.now(timezone('Asia/Kolkata'))
 
-BASEPATH = "/home/milan/testing/"
+BASEPATH = [Path_To_CSV_Folder]
 
 urls = (
     '/f1', 'flyport1',
