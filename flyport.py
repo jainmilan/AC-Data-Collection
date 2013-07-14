@@ -19,7 +19,7 @@ urls = (
 )
 app = web.application(urls, globals())
 
-GLOBAL_DATA = BASEPATH + "data.csv"
+#GLOBAL_DATA = BASEPATH + "data.csv"
 class flyport1:        
         
 	def POST(self):
@@ -54,11 +54,11 @@ class flyport1:
 		file.close()
 		
 		# File Won't be deleted, Local Data Storage
-		file_global = open(GLOBAL_DATA,"a")
-		upload_time = time.time()
-		file_global.write("1," + str(upload_time) + "," + str(temperature) + "," + str(PIR) + "," + str(light) + "\n")
-		file_global.close()
-		print(data)
+#		file_global = open(GLOBAL_DATA,"a")
+#		upload_time = time.time()
+#		file_global.write("1," + str(upload_time) + "," + str(temperature) + "," + str(PIR) + "," + str(light) + "\n")
+#		file_global.close()
+#		print(data)
 		
 class flyport2:        
         
@@ -94,11 +94,11 @@ class flyport2:
 		file.close()
 		
 		# File Won't be deleted, Local Data Storage
-		file_global = open(GLOBAL_DATA,"a")
-		upload_time = time.time()
-		file_global.write("2," + str(upload_time) + "," + str(temperature) + "," + str(PIR) + "," + str(light) + "\n")
-		file_global.close()
-		print(data)
+#		file_global = open(GLOBAL_DATA,"a")
+#		upload_time = time.time()
+#		file_global.write("2," + str(upload_time) + "," + str(temperature) + "," + str(PIR) + "," + str(light) + "\n")
+#		file_global.close()
+#		print(data)
 
 if __name__ == "__main__":
     app.run()
