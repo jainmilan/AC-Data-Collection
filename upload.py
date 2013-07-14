@@ -15,10 +15,13 @@ from SENSOR_ACT_CONFIG import DEVICE_LOCATION
 from SENSOR_ACT_CONFIG import DEVICE_NAME
 from SENSOR_ACT_CONFIG import URL_SENSOR_ACT
 
-FLYPORT_DATA_BASEPATH =	[Path_To_CSV_Folder]
+FLYPORT_DATA_BASEPATH =	'/home/milan/Projects/AC/Testing/test/'
 
 # Log File	
 log_file = open(FLYPORT_DATA_BASEPATH + "Log_File.txt","a")
+
+# Lock to delete Files
+lock_file = 0
 	
 while(True):
 	
@@ -60,14 +63,24 @@ while(True):
 					except requests.exceptions.ConnectionError:
 						# If Connection Down
 						log_file.write(str(observation_datetime) + "=> Network Down: " + str(f) + "\n")
-						continue
+						# Lock the file so that it won't be deleted
+						lock_file = 1
+						# Exit from file
+						break
 					
 					except Exception as exception_raised:
 						# Any Other Exception Raised
 						log_file.write(str(observation_datetime) + "=> " + str(exception_raised) + "\n")
 						continue
-				log_file.write(str(observation_datetime) + "=> File Uploaded. Now Deleting \n")
-				os.remove(f)
+				
+				if lock_file == 0:
+					# If file not locked
+					log_file.write(str(observation_datetime) + "=> File Uploaded. Now Deleting \n")
+					os.remove(f)
+				else:
+					# Go To Sleep
+					break
+		
 		else:
 			log_file.write(str(observation_datetime) + "=> Data Collection Going On \n")
 	time.sleep(900)
