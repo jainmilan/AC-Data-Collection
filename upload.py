@@ -10,18 +10,27 @@ import datetime
 import requests
 
 from pytz import timezone
-from SENSOR_ACT_CONFIG import SA_API_KEY
-from SENSOR_ACT_CONFIG import DEVICE_LOCATION
-from SENSOR_ACT_CONFIG import DEVICE_NAME
-from SENSOR_ACT_CONFIG import URL_SENSOR_ACT
 
-FLYPORT_DATA_BASEPATH =	'/home/milan/Projects/AC/Testing/test/'
+from SENSOR_ACT_CONFIG_AH import SA_API_KEY_AH
+from SENSOR_ACT_CONFIG_AH import DEVICE_LOCATION_AH
+from SENSOR_ACT_CONFIG_AH import DEVICE_NAME_AH
+from SENSOR_ACT_CONFIG_AH import URL_SENSOR_ACT_AH
+
+from SENSOR_ACT_CONFIG_MJ import SA_API_KEY_MJ
+from SENSOR_ACT_CONFIG_MJ import DEVICE_LOCATION_MJ
+from SENSOR_ACT_CONFIG_MJ import DEVICE_NAME_MJ
+from SENSOR_ACT_CONFIG_MJ import URL_SENSOR_ACT_MJ
+
+FLYPORT_DATA_BASEPATH_1 =	[Flyport1]
+FLYPORT_DATA_BASEPATH_2 =	[Flyport2]
 
 # Log File	
-log_file = open(FLYPORT_DATA_BASEPATH + "Log_File.txt","a")
+log_file_1 = open(FLYPORT_DATA_BASEPATH_1 + "Log_File.txt","a")
+log_file_2 = open(FLYPORT_DATA_BASEPATH_2 + "Log_File.txt","a")
 
 # Lock to delete Files
-lock_file = 0
+lock_file_1 = 0
+lock_file_2 = 0
 	
 while(True):
 	
@@ -30,16 +39,17 @@ while(True):
 	observation_datetime = datetime.datetime.fromtimestamp(observation_timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
 	# List of files to Upload
-	list_of_files = glob.glob(FLYPORT_DATA_BASEPATH+str("*.csv"))
-	log_file.write(str(observation_datetime) + "=> Files To Upload: " + str(list_of_files) + "\n")
+	list_of_files = glob.glob(FLYPORT_DATA_BASEPATH_1+str("*.csv"))
+	log_file_1.write(str(observation_datetime) + "=> Files To Upload: " + str(list_of_files) + "\n")
 	
 	# For Loop to iterate through every File in the folder
 	for f in list_of_files:
+	
 		# Check if file is in use for data collection
 		if int(time.time())-int(os.stat(f).st_mtime)>900:
 			with open(f) as filein:
 				reader = csv.reader(filein, quoting=csv.QUOTE_NONNUMERIC, skipinitialspace = True)
-				log_file.write(str(observation_datetime) + "=> Starting Upload of File: " + str(f) + "\n")
+				log_file_1.write(str(observation_datetime) + "=> Starting Upload of File: " + str(f) + "\n")
 				
 				for row in reader:
 					
@@ -50,37 +60,91 @@ while(True):
 					
 					# Create Packet
 					headers = { 'Content-Type': 'application/json; charset=UTF-8'}
-					payload1 = { 'secretkey' : SA_API_KEY, "data" : { "loc" : DEVICE_LOCATION, "dname" : str(DEVICE_NAME), "sname" :"PIRSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [pir] } ] } }
-					payload2 = { 'secretkey' : SA_API_KEY, "data" : { "loc" : DEVICE_LOCATION, "dname" : str(DEVICE_NAME), "sname" :"TemperatureSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [temperature] } ] } }
-					payload3 = { 'secretkey' : SA_API_KEY, "data" : { "loc" : DEVICE_LOCATION, "dname" : str(DEVICE_NAME), "sname" :"LightSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [light] } ] } }
+					payload1 = { 'secretkey' : SA_API_KEY_AH, "data" : { "loc" : DEVICE_LOCATION_AH, "dname" : str(DEVICE_NAME_AH), "sname" :"PIRSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [pir] } ] } }
+					payload2 = { 'secretkey' : SA_API_KEY_AH, "data" : { "loc" : DEVICE_LOCATION_AH, "dname" : str(DEVICE_NAME_AH), "sname" :"TemperatureSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [temperature] } ] } }
+					payload3 = { 'secretkey' : SA_API_KEY_AH, "data" : { "loc" : DEVICE_LOCATION_AH, "dname" : str(DEVICE_NAME_AH), "sname" :"LightSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [light] } ] } }
 
 					try:
 						# Upload Data
-						r1 = requests.post(URL_SENSOR_ACT, data=json.dumps(payload1), headers=headers)
-						r2 = requests.post(URL_SENSOR_ACT, data=json.dumps(payload2), headers=headers)
-						r3 = requests.post(URL_SENSOR_ACT, data=json.dumps(payload3), headers=headers)
+						r1 = requests.post(URL_SENSOR_ACT_AH, data=json.dumps(payload1), headers=headers)
+						r2 = requests.post(URL_SENSOR_ACT_AH, data=json.dumps(payload2), headers=headers)
+						r3 = requests.post(URL_SENSOR_ACT_AH, data=json.dumps(payload3), headers=headers)
 						
 					except requests.exceptions.ConnectionError:
 						# If Connection Down
-						log_file.write(str(observation_datetime) + "=> Network Down: " + str(f) + "\n")
+						log_file_1.write(str(observation_datetime) + "=> Network Down: " + str(f) + "\n")
 						# Lock the file so that it won't be deleted
-						lock_file = 1
+						lock_file_1 = 1
 						# Exit from file
 						break
 					
 					except Exception as exception_raised:
 						# Any Other Exception Raised
-						log_file.write(str(observation_datetime) + "=> " + str(exception_raised) + "\n")
+						log_file_1.write(str(observation_datetime) + "=> " + str(exception_raised) + "\n")
 						continue
 				
-				if lock_file == 0:
+				if lock_file_1 == 0:
 					# If file not locked
-					log_file.write(str(observation_datetime) + "=> File Uploaded. Now Deleting \n")
+					log_file_1.write(str(observation_datetime) + "=> File Uploaded. Now Deleting \n")
+					os.remove(f)
+				else:
+					# Go To Sleep
+					break
+		else:
+			log_file_1.write(str(observation_datetime) + "=> Data Collection Going On \n")
+	
+	# List of files to Upload
+	list_of_files = glob.glob(FLYPORT_DATA_BASEPATH_1+str("*.csv"))
+	log_file_2.write(str(observation_datetime) + "=> Files To Upload: " + str(list_of_files) + "\n")
+	
+	# For Loop to iterate through every File in the folder
+	for f in list_of_files:
+		# Check if file is in use for data collection
+		if int(time.time())-int(os.stat(f).st_mtime)>900:
+			with open(f) as filein:
+				reader = csv.reader(filein, quoting=csv.QUOTE_NONNUMERIC, skipinitialspace = True)
+				log_file_2.write(str(observation_datetime) + "=> Starting Upload of File: " + str(f) + "\n")
+				
+				for row in reader:
+					
+					timestamp = math.fabs(row[0])
+					temperature = row[1]
+					pir = row[2]
+					light = row[3]
+					
+					# Create Packet
+					headers = { 'Content-Type': 'application/json; charset=UTF-8'}
+					payload1 = { 'secretkey' : SA_API_KEY_MJ, "data" : { "loc" : DEVICE_LOCATION_MJ, "dname" : str(DEVICE_NAME_MJ), "sname" :"PIRSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [pir] } ] } }
+					payload2 = { 'secretkey' : SA_API_KEY_MJ, "data" : { "loc" : DEVICE_LOCATION_MJ, "dname" : str(DEVICE_NAME_MJ), "sname" :"TemperatureSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [temperature] } ] } }
+					payload3 = { 'secretkey' : SA_API_KEY_MJ, "data" : { "loc" : DEVICE_LOCATION_MJ, "dname" : str(DEVICE_NAME_MJ), "sname" :"LightSensor", "sid" : "1", "timestamp" : timestamp, "channels" : [ { "cname" : "channel1", "unit" : "none","readings" : [light] } ] } }
+
+					try:
+						# Upload Data
+						r1 = requests.post(URL_SENSOR_ACT_MJ, data=json.dumps(payload1), headers=headers)
+						r2 = requests.post(URL_SENSOR_ACT_MJ, data=json.dumps(payload2), headers=headers)
+						r3 = requests.post(URL_SENSOR_ACT_MJ, data=json.dumps(payload3), headers=headers)
+						
+					except requests.exceptions.ConnectionError:
+						# If Connection Down
+						log_file_2.write(str(observation_datetime) + "=> Network Down: " + str(f) + "\n")
+						# Lock the file so that it won't be deleted
+						lock_file_2 = 1
+						# Exit from file
+						break
+					
+					except Exception as exception_raised:
+						# Any Other Exception Raised
+						log_file_2.write(str(observation_datetime) + "=> " + str(exception_raised) + "\n")
+						continue
+				
+				if lock_file_2 == 0:
+					# If file not locked
+					log_file_2.write(str(observation_datetime) + "=> File Uploaded. Now Deleting \n")
 					os.remove(f)
 				else:
 					# Go To Sleep
 					break
 		
 		else:
-			log_file.write(str(observation_datetime) + "=> Data Collection Going On \n")
+			log_file_2.write(str(observation_datetime) + "=> Data Collection Going On \n")
 	time.sleep(900)
