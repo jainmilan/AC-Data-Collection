@@ -1,11 +1,11 @@
 import os
 import sys
-import csv
 import time
 import glob
 import json
 import math
 import time
+import logging
 import datetime
 import requests
 
@@ -36,10 +36,6 @@ lock_file_2 = 0
 	
 while(True):
 	
-	# Lock to delete Files
-	lock_file_1 = 0
-	lock_file_2 = 0
-
 	# Current Unix Timestamp and Datetime
 	observation_timestamp = time.time()
 	observation_datetime = datetime.datetime.fromtimestamp(observation_timestamp).strftime('%Y-%m-%d %H:%M:%S')
