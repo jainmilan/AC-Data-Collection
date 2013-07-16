@@ -21,7 +21,7 @@ from SENSOR_ACT_CONFIG_MJ import DEVICE_LOCATION_MJ
 from SENSOR_ACT_CONFIG_MJ import DEVICE_NAME_MJ
 from SENSOR_ACT_CONFIG_MJ import URL_SENSOR_ACT_MJ
 
-FLYPORT_DATA_BASEPATH =	[Flyport]
+FLYPORT_DATA_BASEPATH =	[Flyport Data Base Directory]
 
 FLYPORT_DATA_BASEPATH_1 = FLYPORT_DATA_BASEPATH + "flyport1/"
 FLYPORT_DATA_BASEPATH_2 = FLYPORT_DATA_BASEPATH + "flyport2/"
@@ -93,10 +93,10 @@ while(True):
 					# Go To Sleep
 					break
 		else:
-			log_file_1.write(str(observation_datetime) + "=> Data Collection Going On \n")
+			log_file_1.write(str(observation_datetime) + "=> Cannot Upload. Data Collection Going On: " + str(f) + "\n")
 	
 	# List of files to Upload
-	list_of_files = glob.glob(FLYPORT_DATA_BASEPATH_1+str("*.csv"))
+	list_of_files = glob.glob(FLYPORT_DATA_BASEPATH_2+str("*.csv"))
 	log_file_2.write(str(observation_datetime) + "=> Files To Upload: " + str(list_of_files) + "\n")
 	
 	# For Loop to iterate through every File in the folder
@@ -146,7 +146,6 @@ while(True):
 				else:
 					# Go To Sleep
 					break
-		
 		else:
-			log_file_2.write(str(observation_datetime) + "=> Data Collection Going On \n")
+			log_file_2.write(str(observation_datetime) + "=> Cannot Upload. Data Collection Going On: " + str(f) + "\n")
 	time.sleep(900)
