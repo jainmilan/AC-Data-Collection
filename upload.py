@@ -148,4 +148,8 @@ while(True):
 					break
 		else:
 			log_file_2.write(str(observation_datetime) + "=> Cannot Upload. Data Collection Going On: " + str(f) + "\n")
+	log_file_1.write(str(observation_datetime) + "=> Sleeping \n")
+	log_file_2.write(str(observation_datetime) + "=> Sleeping \n")
 	time.sleep(900)
+	log_file_1.write(str(observation_datetime) + "=> Back To Work \n")
+	log_file_2.write(str(observation_datetime) + "=> Back To Work \n")
