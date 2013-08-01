@@ -43,6 +43,10 @@ while(1):
 	temperature = temperature / 1000
 	# * *
 	
+	# Discard Unwanted Values
+	if temperature < 0:
+		continue
+
 	# Current Time
 	current_time = time.time()
 	#global init_time
