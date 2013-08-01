@@ -8,8 +8,12 @@ from CONFIGURATION import LOG_DIRECTORY
 from CONFIGURATION import DATA_DIRECTORY
 from CONFIGURATION import SLEEP_TIME
 
+# Starting execution of the program
+start_time = time.time()
+
 #global init_time
 init_time = time.time()
+
 #global init_time_t
 init_time_t = datetime.datetime.now(timezone('Asia/Kolkata'))
 
@@ -21,6 +25,7 @@ now = datetime.datetime.now(timezone('Asia/Kolkata'))
 logging.basicConfig(filename=log_file,format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filemode='a', level=logging.DEBUG)
 
 while(1):
+
 	# *Code Snippet from http://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/temperature/*
 	# Open the file that we viewed earlier so that python can see what is in it. Replace the serial number as before.
 	tfile = open("/sys/bus/w1/devices/28-000004a5a601/w1_slave")
@@ -62,4 +67,18 @@ while(1):
 	except Exception as exception_raised:
 		# Writing To the Log File
 		logging.error('Error Encountered: ' + str(exception_raised))
-	time.sleep(SLEEP_TIME)
+	
+	# Time just before the sleep
+	end_time = time.time()
+	
+	# Time taken to execute the program
+	execution_time = end_time - start_time
+	
+	# Time remaining for which program should sleep
+	SLEEP_TIME_REAL = SLEEP_TIME - execution_time
+	
+	# Program going to sleep
+	time.sleep(SLEEP_TIME_REAL)
+	
+	# Starting execution of program
+	start_time = time.time()
