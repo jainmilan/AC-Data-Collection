@@ -9,6 +9,7 @@ import json
 import logging
 import requests
 import datetime
+import logging.handlers
 from pytz import timezone
 
 from CONFIGURATION import SA_API_KEY
@@ -30,7 +31,8 @@ class SensorActDataUpload:
 		
 		# Header for the Packet to SensorAct
 		headers = { 'Content-Type': 'application/json; charset=UTF-8'}
-		
+		timestamp = []
+		temperature = []		
 		# Current Unix Timestamp and Datetime
 		current_timestamp = time.time()
 		current_datetime = datetime.datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
@@ -48,23 +50,25 @@ class SensorActDataUpload:
 					reader = csv.reader(filein, quoting=csv.QUOTE_NONNUMERIC, skipinitialspace = True)
 					logging.info('Starting Upload of File: ' + str(f))
 					for row in reader:
-						payload["data"]["timestamp"] = math.fabs(row[0])
-						payload["data"]["channels"][0]["readings"][0] = row[1]
-						
-						try:
-							# Upload Data
-							r = requests.post(URL_SENSOR_ACT, data=json.dumps(payload), headers=headers)
+						timestamp.append(int(row[0]))
+						temperature.append(row[1])
+					payload["data"]["timestamp"] = timestamp[0]
+					payload["data"]["channels"][0]["readings"] = temperature
+					
+					try:
+						# Upload Data
+						r = requests.post(URL_SENSOR_ACT, data=json.dumps(payload), headers=headers)
 	
-						except requests.exceptions.ConnectionError:
-							# If Connection Down
-							logging.error('Network Down')
-							# Exit from function
-							exit(1)
-						
-						except Exception as Error:
-							print(Error)
-							logging.error(Error)
-							exit(1)
+					except requests.exceptions.ConnectionError:
+						# If Connection Down
+						logging.error('Network Down')
+						# Exit from function
+						return(1)
+					
+					except Exception as Error:
+						print(Error)
+						logging.error(Error)
+						return(1)
 	
 					try:
 						# Delete the File
@@ -82,7 +86,7 @@ class SensorActDataUpload:
 if __name__ == "__main__":
 	while True:
 		upload = SensorActDataUpload()
-		payload = { 'secretkey' : SA_API_KEY, "data" : { "loc" : DEVICE_LOCATION, "dname" : DEVICE_NAME, "sname" :"", "sid" : "1", "timestamp" : 0, "channels" : [ { "cname" : "channel1", "unit" : "celsius" ,"readings" : [0] } ] } }
+		payload = { 'secretkey' : SA_API_KEY, "data" : { "loc" : DEVICE_LOCATION, "dname" : DEVICE_NAME, "sname" :"", "sid" : "1", "timestamp" : 0, "channels" : [ { "cname" : "channel1", "unit" : "celsius" ,"readings" : [] } ] } }
 		payload_1 = payload
 		data_directory_1 = AC_DATA_DIRECTORY
 		payload_1["data"]["sname"] = "TemperatureSensor"
@@ -92,3 +96,4 @@ if __name__ == "__main__":
 		data_directory_2 = WEATHER_DATA_DIRECTORY
 		upload.sensor_act_upload(payload_2,data_directory_2)
 		time.sleep(WAIT_BEFORE_NEXT_UPLOAD)
+
