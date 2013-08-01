@@ -1,9 +1,0 @@
-{
-	"sensors": {
-		"sensor_name": "TemperatureSensor",
-		"sensor_id": "1",
-		"channels": {
-			"name": "channel1"
-		}
-	}
-}
