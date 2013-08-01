@@ -22,8 +22,19 @@ from CONFIGURATION import AC_DATA_DIRECTORY
 from CONFIGURATION import WEATHER_DATA_DIRECTORY
 from CONFIGURATION import WAIT_BEFORE_NEXT_UPLOAD
 
+# Log File
 log_file = LOG_DIRECTORY + 'Log_Upload.txt'
-logging.basicConfig(filename=log_file,format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filemode='a', level=logging.DEBUG)
+
+logger = logging.getLogger('logging data upload')
+logger.setLevel(logging.DEBUG)
+
+# Save Logs at midnight
+daily_logging = logging.handlers.TimedRotatingFileHandler('Log.txt', when='midnight')
+
+formatter = logging.Formatter(fmt = '%(asctime)s %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p')
+daily_logging.setFormatter(formatter)
+
+logger.addHandler(daily_logging)
 
 class SensorActDataUpload:
 	
@@ -48,7 +59,7 @@ class SensorActDataUpload:
 			if time_from_last_modification > 900:
 				with open(f) as filein:
 					reader = csv.reader(filein, quoting=csv.QUOTE_NONNUMERIC, skipinitialspace = True)
-					logging.info('Starting Upload of File: ' + str(f))
+					logger.info('Starting Upload of File: ' + str(f))
 					for row in reader:
 						timestamp.append(int(row[0]))
 						temperature.append(row[1])
@@ -61,27 +72,26 @@ class SensorActDataUpload:
 	
 					except requests.exceptions.ConnectionError:
 						# If Connection Down
-						logging.error('Network Down')
+						logger.error('Network Down')
 						# Exit from function
 						return(1)
 					
 					except Exception as Error:
-						print(Error)
-						logging.error(Error)
+						logger.error(Error)
 						return(1)
 	
 					try:
 						# Delete the File
-						logging.info('File Uploaded.')
-						logging.warning('Deleting File: ' + str(f))
+						logger.info('File Uploaded.')
+						logger.warning('Deleting File: ' + str(f))
 						os.remove(f)
 						
 					except OSError:
 						# File is uploaded but not found
-						logging.error('Either file already deleted or not found!') 
+						logger.error('Either file already deleted or not found!') 
 						continue
 			else:
-				logging.warning('Cannot Upload. Data Collection Going On: ' + str(f))
+				logger.warning('Cannot Upload. Data Collection Going On: ' + str(f))
 	
 if __name__ == "__main__":
 	while True:
